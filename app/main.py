@@ -70,12 +70,17 @@ def create_posts(post: Post):
 
 
 @app.get("/posts/{id}")
-def get_post(id: int, response: Response):
-    post = find_post(int(id))
-    if not post:
+def get_post(id: int):
+    cursor.execute("""
+    SELECT * FROM social_media_posts WHERE id={0}
+    """.format(str(id)))
+    post = cursor.fetchone()
+    print(post)
+    if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'post with id:{id} was not found')
-    return{"post-detail": post}
+    else:
+        return{"post-detail": post}
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
